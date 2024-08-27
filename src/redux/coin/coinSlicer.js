@@ -1,7 +1,7 @@
 // redux/coin/coinSlice.js
 
 import { createSlice } from "@reduxjs/toolkit";
-import { coinList } from "./coinThunks"; // Import the thunk
+import { coinList, allCoins } from "./coinThunks"; // Import the thunks
 
 const initialState = {
   isLoading: false,
@@ -17,6 +17,7 @@ export const coinSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Handling the coinList thunk
       .addCase(coinList.pending, (state) => {
         state.isLoading = true;
         state.isError = false; // Reset error on new request
@@ -27,6 +28,21 @@ export const coinSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(coinList.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.errorMessage = action.error.message; // Store the error message
+      })
+      // Handling the allCoins thunk
+      .addCase(allCoins.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false; // Reset error on new request
+        state.errorMessage = ""; // Clear previous error message
+      })
+      .addCase(allCoins.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload; // Set data to the payload of allCoins thunk
+      })
+      .addCase(allCoins.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.errorMessage = action.error.message; // Store the error message
